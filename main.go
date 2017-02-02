@@ -3,20 +3,56 @@ package main
 import (
 	"fmt"
 	"os"
-	"strconv"
-	"hiyoga/classes"
+
+	"hiyoga/classtypes"
 	"hiyoga/util"
+
+	"github.com/urfave/cli"
+	"hiyoga/classes"
 )
 
+// Right now HiYoga Majorstuen is the only center
 const MAJORSTUEN string = "94c207f7-fdc0-4de2-8ca4-aa42e8387b60"
 
 func main() {
-	days := getDaysArg()
+	app := cli.NewApp()
+	app.Version = "0.0.1"
+	app.Name = "HiYoga CLI"
+	app.Usage = "Get moving!"
 
-	if days > 7 {
-		util.Fail("Can not print more than one week in advance!")
+	app.Commands = []cli.Command{
+		{
+			Name:    "list-classes",
+			Usage:   "list upcoming yoga classes",
+			Aliases: []string{"lc"},
+			Action: func(c *cli.Context) error {
+				days := c.Int("days")
+				listAndPrintClasses(MAJORSTUEN, days)
+				return nil
+			},
+			Flags: []cli.Flag{
+				cli.IntFlag{
+					Name:  "days, d",
+					Usage: "number of days to list (including today)",
+					Value: 3,
+				},
+			},
+		},
+		{
+			Name:    "list-class-types",
+			Usage:   "list available yoga class types",
+			Aliases: []string{"lct"},
+			Action: func(c *cli.Context) error {
+				listAndPrintClassTypes()
+				return nil
+			},
+		},
 	}
 
+	app.Run(os.Args)
+}
+
+func listAndPrintClasses(center string, days int) {
 	c, err := classes.ListClasses(MAJORSTUEN, days)
 
 	if err != nil {
@@ -26,19 +62,12 @@ func main() {
 	classes.PrettyPrintClassResponse(days, &c)
 }
 
-// Generate the date list component of the classes list URI
-func getDaysArg() int {
-	args := os.Args[1:]
+func listAndPrintClassTypes() {
+	ct, err := classtypes.ListClassTypes()
 
-	if len(args) == 1 {
-		days, err := strconv.Atoi(args[0])
-
-		if err != nil {
-			util.Fail("Usage: hiyoga [number of days]")
-		}
-
-		return days
+	if err != nil {
+		util.Fail(fmt.Sprintf("Could not list class types: %v\n", err))
 	}
 
-	return 3
+	classtypes.PrettyPrintClassTypeResponse(&ct)
 }
