@@ -73,7 +73,7 @@ func ListClasses(center string, daysFromNow int) (ClassResponse, error) {
 }
 
 func PrettyPrintClassResponse(dayCount int, response *ClassResponse) {
-	color.Green("Classes at %s for the next %d days (including today):\n\n", "HiYoga Majorstuen", dayCount)
+	color.White("Classes at %s for the next %d days (including today):\n\n", "HiYoga Majorstuen", dayCount)
 
 	day := time.Now().Day()
 
