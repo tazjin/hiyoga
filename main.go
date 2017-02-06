@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/tazjin/hiyoga/classes"
@@ -55,7 +54,7 @@ func listAndPrintClasses(center string, days int) {
 	c, err := classes.ListClasses(MAJORSTUEN, days)
 
 	if err != nil {
-		util.Fail(fmt.Sprintf("Could not list classes: %v\n", err))
+		util.Fail(err)
 	}
 
 	classes.PrettyPrintClassResponse(days, &c)
@@ -65,7 +64,7 @@ func listAndPrintClassTypes() {
 	ct, err := classtypes.ListClassTypes()
 
 	if err != nil {
-		util.Fail(fmt.Sprintf("Could not list class types: %v\n", err))
+		util.Fail(err)
 	}
 
 	classtypes.PrettyPrintClassTypeResponse(&ct)
