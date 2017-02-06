@@ -45,6 +45,29 @@ func main() {
 				return nil
 			},
 		},
+		{
+			Name:  "login",
+			Usage: "Log into HiYoga booking system",
+			Action: func(c *cli.Context) error {
+				request := &auth.LoginRequest{
+					UserName: c.String("user"),
+					Password: c.String("pass"),
+				}
+
+				auth.LoginAndStoreCredentials(request)
+				return nil
+			},
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "user, u",
+					Usage: "username",
+				},
+				cli.StringFlag{
+					Name:  "pass, p",
+					Usage: "password",
+				},
+			},
+		},
 	}
 
 	app.Run(os.Args)
