@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"github.com/polydawn/meep"
+	"os"
 )
 
 const LOGIN_URL string = "https://www.hiyoga.no/webapi/auth/login"
@@ -48,7 +49,7 @@ func LoginAndStoreCredentials(request *LoginRequest) {
 
 	json, _ := json.Marshal(creds)
 
-	ioutil.WriteFile("/Users/vincent/.hiyoga", json, 0644)
+	ioutil.WriteFile(getLoginFileLocation(), json, 0644)
 	fmt.Printf("Stored credentials for user %s\n", creds.UserId)
 }
 
@@ -94,4 +95,9 @@ func findAuthCookie(resp *http.Response) string {
 	}
 
 	return ""
+}
+
+func getLoginFileLocation() string {
+	home := os.Getenv("HOME")
+	return home + "/.hiyoga"
 }
