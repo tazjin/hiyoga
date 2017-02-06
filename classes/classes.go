@@ -1,12 +1,12 @@
 package classes
 
 import (
-	"time"
-	"fmt"
 	"bytes"
-	"io/ioutil"
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"net/http"
+	"time"
 
 	"github.com/fatih/color"
 )

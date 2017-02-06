@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"os"
 
-	"hiyoga/classtypes"
-	"hiyoga/util"
-
+	"github.com/tazjin/hiyoga/classes"
+	"github.com/tazjin/hiyoga/classtypes"
+	"github.com/tazjin/hiyoga/util"
 	"github.com/urfave/cli"
-	"hiyoga/classes"
 )
 
 // Right now HiYoga Majorstuen is the only center
