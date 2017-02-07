@@ -17,7 +17,6 @@ type HiyogaToken struct {
 type HiyogaConfig struct {
 	Username *string      `json:"username"`
 	Password *string      `json:"password"`
-	UsePass  *bool        `json:"use_pass"`
 	Token    *HiyogaToken `json:"token"`
 }
 
