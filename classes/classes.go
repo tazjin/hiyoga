@@ -9,11 +9,16 @@ import (
 	"time"
 
 	"github.com/fatih/color"
+	"github.com/tazjin/hiyoga/util"
+	"github.com/urfave/cli"
 )
 
 const CLASSES_URL string = "https://www.hiyoga.no/sats-api/no/classes?regions=%s&dates=%s"
 const URL_DATE_FORMAT string = "20060102"
 const PRETTY_PRINT_DATE_FORMAT = "Monday at 15:04"
+
+// Right now HiYoga Majorstuen is the only center
+const MAJORSTUEN string = "94c207f7-fdc0-4de2-8ca4-aa42e8387b60"
 
 type Class struct {
 	Name               string    `json:"name"`
@@ -109,4 +114,30 @@ func prettyPrintAttendance(c *Class) string {
 	}
 
 	return color.YellowString("%d of %d spots taken", c.BookedPersonsCount, c.MaxPersonsCount)
+}
+
+func ListClassesCommand() cli.Command {
+	return cli.Command{
+		Name:    "list-classes",
+		Usage:   "list upcoming yoga classes",
+		Aliases: []string{"lc"},
+		Action: func(c *cli.Context) error {
+			days := c.Int("days")
+			cl, err := ListClasses(MAJORSTUEN, days)
+
+			if err != nil {
+				util.Fail(err)
+			}
+
+			PrettyPrintClassResponse(days, &cl)
+			return nil
+		},
+		Flags: []cli.Flag{
+			cli.IntFlag{
+				Name:  "days, d",
+				Usage: "number of days to list (including today)",
+				Value: 3,
+			},
+		},
+	}
 }

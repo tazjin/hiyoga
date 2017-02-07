@@ -8,6 +8,8 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
+	"github.com/tazjin/hiyoga/util"
+	"github.com/urfave/cli"
 )
 
 const CLASSTYPES_URL string = "https://www.hiyoga.no/sats-api/no/classtypes"
@@ -58,4 +60,22 @@ func prettyPrintClassType(classType *ClassType) {
 	fmt.Printf("%s\n%s\n\n",
 		color.MagentaString(classType.Name),
 		strings.TrimSpace(classType.Description))
+}
+
+func ListClassTypesCommand() cli.Command {
+	return cli.Command{
+		Name:    "list-class-types",
+		Usage:   "list available yoga class types",
+		Aliases: []string{"lct"},
+		Action: func(c *cli.Context) error {
+			ct, err := ListClassTypes()
+
+			if err != nil {
+				util.Fail(err)
+			}
+
+			PrettyPrintClassTypeResponse(&ct)
+			return nil
+		},
+	}
 }
