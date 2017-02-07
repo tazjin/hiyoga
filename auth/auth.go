@@ -92,13 +92,13 @@ func performLoginCall(request *loginRequest) (*util.HiyogaToken, error) {
 		util.Fail(err)
 	}
 
+	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
+	err = json.Unmarshal(body, &l)
 
 	if resp.StatusCode != 200 || !l.LoginSuccess {
 		util.Fail(fmt.Errorf("Login failed: %s (%d)\n", string(body), resp.StatusCode))
 	}
-
-	err = json.Unmarshal(body, &l)
 
 	if err != nil {
 		util.Fail(err)
