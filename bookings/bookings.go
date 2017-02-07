@@ -10,7 +10,8 @@ import (
 	"github.com/tazjin/hiyoga/classes"
 	"github.com/tazjin/hiyoga/util"
 	"github.com/urfave/cli"
-	"time"
+	"os"
+	"text/tabwriter"
 )
 
 type Booking struct {
@@ -49,32 +50,32 @@ func listBookings() []Booking {
 }
 
 func prettyPrintBookings(list []Booking) {
-	color.White("Booked classes:")
+	color.White("Booked classes:\n")
 
-	day := time.Now().Day()
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
 
 	for _, b := range list {
-		// Extra newline between days
-		if b.Class.StartTime.Day() != day {
-			fmt.Println("")
-			day = b.Class.StartTime.Day()
-		}
-
-		fmt.Printf("%s: %s with %s (%s)\n",
-			b.Class.StartTime.Format(classes.PRETTY_PRINT_DATE_FORMAT),
-			b.Class.Name,
+		fmt.Fprintf(w, "%s\t%s\t%s\t(%s)\t\n",
+			classes.PrettyPrintClassTime(&b.Class.StartTime),
+			color.MagentaString(b.Class.Name),
 			b.Class.InstructorId,
-			prettyPrintBookingStatus(b.Status),
+			prettyPrintBookingStatus(&b),
 		)
 	}
+
+	w.Flush()
 }
 
-func prettyPrintBookingStatus(status string) string {
-	if status == "confirmed" {
-		return color.GreenString(status)
+func prettyPrintBookingStatus(b *Booking) string {
+	if b.Status == "confirmed" {
+		return color.GreenString(b.Status)
 	}
 
-	return color.YellowString(status)
+	if b.PositionInQueue >= 0 {
+		return color.YellowString("%d in queue", b.PositionInQueue)
+	}
+
+	return color.YellowString(b.Status)
 }
 
 func ListBookingsCommand() cli.Command {

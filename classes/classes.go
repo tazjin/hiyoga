@@ -11,6 +11,8 @@ import (
 	"github.com/fatih/color"
 	"github.com/tazjin/hiyoga/util"
 	"github.com/urfave/cli"
+	"os"
+	"text/tabwriter"
 )
 
 const CLASSES_URL string = "https://www.hiyoga.no/sats-api/no/classes?regions=%s&dates=%s"
@@ -82,38 +84,42 @@ func PrettyPrintClassResponse(dayCount int, response *ClassResponse) {
 
 	day := time.Now().Day()
 
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+
 	for _, c := range response.Classes {
 		// Extra newline between days
 		if c.StartTime.Day() != day {
-			fmt.Println("")
+			fmt.Fprintln(w, "")
 			day = c.StartTime.Day()
 		}
 
-		fmt.Printf("%s: %s with %s (%s)\n",
-			prettyPrintClassTime(&c.StartTime),
+		fmt.Fprintf(w, "%s\t%s\t%s\t%s\t\n",
+			PrettyPrintClassTime(&c.StartTime),
 			color.MagentaString(c.Name),
 			c.InstructorId,
 			prettyPrintAttendance(&c))
-
 	}
+
+	w.Flush()
 }
 
-func prettyPrintClassTime(classtime *time.Time) string {
+func PrettyPrintClassTime(classtime *time.Time) string {
 	return color.BlueString(classtime.Format(PRETTY_PRINT_DATE_FORMAT))
 }
 
 func prettyPrintAttendance(c *Class) string {
 	available := c.MaxPersonsCount - c.BookedPersonsCount
+	taken := fmt.Sprintf("%2d of %2d spots taken", c.BookedPersonsCount, c.MaxPersonsCount)
 
 	if available > 10 {
-		return color.GreenString("%d of %d spots taken", c.BookedPersonsCount, c.MaxPersonsCount)
+		return color.GreenString(taken)
 	}
 
 	if available == 0 {
-		return color.RedString("all %d spots taken (%d in queue)", c.MaxPersonsCount, c.WaitingListCount)
+		return color.RedString("%s (%d in queue)", taken, c.WaitingListCount)
 	}
 
-	return color.YellowString("%d of %d spots taken", c.BookedPersonsCount, c.MaxPersonsCount)
+	return color.YellowString(taken)
 }
 
 func ListClassesCommand() cli.Command {
