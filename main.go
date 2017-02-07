@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 
+	"github.com/tazjin/hiyoga/bookings"
 	"github.com/tazjin/hiyoga/classes"
 	"github.com/tazjin/hiyoga/classtypes"
 	"github.com/tazjin/hiyoga/util"
@@ -45,6 +46,7 @@ func main() {
 				return nil
 			},
 		},
+		bookings.ListBookingsCommand(),
 	}
 
 	app.Run(os.Args)
