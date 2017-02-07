@@ -50,6 +50,6 @@ func getConfigFileLocation() string {
 }
 
 // Check whether a JWT should still be considered valid (less than 60m old)
-func (t *HiyogaToken)TokenStillValid() bool {
+func (t *HiyogaToken) TokenStillValid() bool {
 	return t.Timestamp.Add(60 * time.Minute).After(time.Now())
 }

@@ -36,14 +36,14 @@ type LoginError struct {
 	Response string
 }
 
-func AuthenticatedGet(url string)  (resp *http.Response, err error) {
+func AuthenticatedGet(url string) (resp *http.Response, err error) {
 	token := getCredentials()
 
 	client := http.Client{}
 
 	req, err := http.NewRequest("GET", url, nil)
 	req.AddCookie(&http.Cookie{
-		Name: COOKIE_NAME,
+		Name:  COOKIE_NAME,
 		Value: token.Token,
 	})
 
@@ -58,7 +58,7 @@ func getCredentials() *util.HiyogaToken {
 		util.Fail(err)
 	}
 
-	if config.Token != nil &&  config.Token.TokenStillValid() {
+	if config.Token != nil && config.Token.TokenStillValid() {
 		return config.Token
 	}
 
@@ -111,7 +111,7 @@ func performLoginCall(request *loginRequest) (*util.HiyogaToken, error) {
 
 	credentials := &util.HiyogaToken{
 		Timestamp: time.Now(),
-		Token:  token,
+		Token:     token,
 	}
 
 	return credentials, nil
