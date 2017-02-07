@@ -20,4 +20,18 @@ COMMANDS:
      help, h                Shows a list of commands or help for one command
 ```
 
+## Authentication support
+
+The HiYoga CLI supports authentication for doing things like listing bookings and booking new classes.
+
+To make use of this, place a configuration file like this in `$HOME/.hiyoga`:
+
+```json
+{
+  "username": "some.email@example.com",
+  "password": "TremendousPassword2017"
+}
+
+```
+
 [HiYoga]: https://www.hiyoga.no/

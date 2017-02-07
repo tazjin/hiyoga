@@ -5,9 +5,18 @@ import (
 	"os"
 
 	"github.com/fatih/color"
+	"github.com/polydawn/meep"
 )
 
-func Fail(msg string) {
-	fmt.Fprintf(os.Stderr, color.RedString(msg))
+type HiyogaError struct {
+	meep.AllTraits
+}
+
+func Fail(cause error) {
+	hiyogaError := meep.New(
+		&HiyogaError{},
+		meep.Cause(cause),
+	)
+	fmt.Fprintf(os.Stderr, color.RedString("%v\n", hiyogaError))
 	os.Exit(1)
 }
