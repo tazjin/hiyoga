@@ -3,7 +3,6 @@ package main
 import (
 	"os"
 
-	"github.com/tazjin/hiyoga/auth"
 	"github.com/tazjin/hiyoga/classes"
 	"github.com/tazjin/hiyoga/classtypes"
 	"github.com/tazjin/hiyoga/util"
@@ -44,29 +43,6 @@ func main() {
 			Action: func(c *cli.Context) error {
 				listAndPrintClassTypes()
 				return nil
-			},
-		},
-		{
-			Name:  "login",
-			Usage: "Log into HiYoga booking system",
-			Action: func(c *cli.Context) error {
-				request := &auth.LoginRequest{
-					UserName: c.String("user"),
-					Password: c.String("pass"),
-				}
-
-				auth.LoginAndStoreCredentials(request)
-				return nil
-			},
-			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:  "user, u",
-					Usage: "username",
-				},
-				cli.StringFlag{
-					Name:  "pass, p",
-					Usage: "password",
-				},
 			},
 		},
 	}

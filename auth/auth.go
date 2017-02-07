@@ -4,19 +4,20 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"hiyoga/util"
 	"io/ioutil"
 	"net/http"
 
 	"github.com/polydawn/meep"
-	"os"
+	"github.com/tazjin/hiyoga/util"
+	"time"
 )
 
 const LOGIN_URL string = "https://www.hiyoga.no/webapi/auth/login"
 const REQUEST_CONTENT_TYPE = "application/json;charset=UTF-8"
 const COOKIE_NAME = "Auth-SatsElixia"
 
-type LoginRequest struct {
+// Login request type as expected by HiYoga API
+type loginRequest struct {
 	UserName string
 	Password string
 }
@@ -27,11 +28,6 @@ type loginResponse struct {
 	UserId        string `json:"userId"`
 }
 
-type Credentials struct {
-	UserId string
-	Token  string
-}
-
 type LoginError struct {
 	meep.TraitTraceable
 	meep.TraitAutodescribing
@@ -40,20 +36,54 @@ type LoginError struct {
 	Response string
 }
 
-func LoginAndStoreCredentials(request *LoginRequest) {
-	creds, err := performLoginCall(request)
+func AuthenticatedGet(url string)  (resp *http.Response, err error) {
+	token := getCredentials()
+
+	client := http.Client{}
+
+	req, err := http.NewRequest("GET", url, nil)
+	req.AddCookie(&http.Cookie{
+		Name: COOKIE_NAME,
+		Value: token.Token,
+	})
+
+	return client.Do(req)
+}
+
+// Attempts to load existing credentials from disk and fetches new ones if necessary
+func getCredentials() *util.HiyogaToken {
+	config, err := util.LoadConfig()
 
 	if err != nil {
 		util.Fail(err)
 	}
 
-	json, _ := json.Marshal(creds)
+	if config.Token != nil &&  config.Token.TokenStillValid() {
+		return config.Token
+	}
 
-	ioutil.WriteFile(getLoginFileLocation(), json, 0644)
-	fmt.Printf("Stored credentials for user %s\n", creds.UserId)
+	// If we get here we need a new token!
+	if config.Username == nil || config.Password == nil {
+		util.Fail(fmt.Errorf("Username and password not configured"))
+	}
+
+	token, err := performLoginCall(&loginRequest{
+		UserName: *config.Username,
+		Password: *config.Password,
+	})
+
+	if err != nil {
+		util.Fail(err)
+	}
+
+	// And update it in the configuration
+	config.Token = token
+	util.WriteConfig(config)
+
+	return token
 }
 
-func performLoginCall(request *LoginRequest) (*Credentials, error) {
+func performLoginCall(request *loginRequest) (*util.HiyogaToken, error) {
 	var l loginResponse
 	postBody, _ := json.Marshal(*request)
 	resp, err := http.Post(LOGIN_URL, REQUEST_CONTENT_TYPE, bytes.NewBuffer(postBody))
@@ -79,8 +109,8 @@ func performLoginCall(request *LoginRequest) (*Credentials, error) {
 		util.Fail(fmt.Errorf("No authentication token found in login response"))
 	}
 
-	credentials := &Credentials{
-		UserId: l.UserId,
+	credentials := &util.HiyogaToken{
+		Timestamp: time.Now(),
 		Token:  token,
 	}
 
@@ -95,9 +125,4 @@ func findAuthCookie(resp *http.Response) string {
 	}
 
 	return ""
-}
-
-func getLoginFileLocation() string {
-	home := os.Getenv("HOME")
-	return home + "/.hiyoga"
 }
