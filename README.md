@@ -1,6 +1,8 @@
 HiYoga CLI
 ==========
 
+[![Build Status](https://travis-ci.org/tazjin/hiyoga.svg?branch=master)](https://travis-ci.org/tazjin/hiyoga)
+
 This is a simple CLI tool for accessing the [HiYoga][] API. It currently supports listing classes for a specified number
 of days in advance, as well as describing the different types of classes available.
 
