@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 
+	"github.com/tazjin/hiyoga/auth"
 	"github.com/tazjin/hiyoga/classes"
 	"github.com/tazjin/hiyoga/classtypes"
 	"github.com/tazjin/hiyoga/util"
