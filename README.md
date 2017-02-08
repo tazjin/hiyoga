@@ -36,4 +36,9 @@ To make use of this, place a configuration file like this in `$HOME/.hiyoga`:
 
 ```
 
+## Disclaimer
+
+This project is not in any way affiliated with HiYoga. I don't work for the company and if this breaks in any way it's
+entirely my fault as this API is not designed for public consumption.
+
 [HiYoga]: https://www.hiyoga.no/
