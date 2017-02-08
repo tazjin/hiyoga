@@ -56,7 +56,7 @@ func prettyPrintBookings(list []Booking) {
 
 	for _, b := range list {
 		fmt.Fprintf(w, "%s\t%s\t%s\t(%s)\t\n",
-			classes.PrettyPrintClassTime(&b.Class.StartTime),
+			classes.PrettyPrintClassTime(&b.Class),
 			color.MagentaString(b.Class.Name),
 			b.Class.InstructorId,
 			prettyPrintBookingStatus(&b),

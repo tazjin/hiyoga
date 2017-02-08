@@ -12,12 +12,12 @@ import (
 	"github.com/tazjin/hiyoga/util"
 	"github.com/urfave/cli"
 	"os"
+	"sync"
 	"text/tabwriter"
 )
 
 const CLASSES_URL string = "https://www.hiyoga.no/sats-api/no/classes?regions=%s&dates=%s"
 const URL_DATE_FORMAT string = "20060102"
-const PRETTY_PRINT_DATE_FORMAT = "Monday at 15:04"
 
 // Right now HiYoga Majorstuen is the only center
 const MAJORSTUEN string = "94c207f7-fdc0-4de2-8ca4-aa42e8387b60"
@@ -82,6 +82,10 @@ func ListClasses(center string, daysFromNow int) (ClassResponse, error) {
 func PrettyPrintClassResponse(dayCount int, response *ClassResponse) {
 	color.White("Classes at %s for the next %d days (including today):\n\n", "HiYoga Majorstuen", dayCount)
 
+	// Prevent extra newline from being printed if no classes happen today by flipping this after the first class
+	var once sync.Once
+	firstOut := false
+
 	day := time.Now().Day()
 
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
@@ -89,12 +93,16 @@ func PrettyPrintClassResponse(dayCount int, response *ClassResponse) {
 	for _, c := range response.Classes {
 		// Extra newline between days
 		if c.StartTime.Day() != day {
-			fmt.Fprintln(w, "")
+			if firstOut {
+				fmt.Fprintln(w, "")
+			}
 			day = c.StartTime.Day()
 		}
 
+		once.Do(func() { firstOut = true })
+
 		fmt.Fprintf(w, "%s\t%s\t%s\t%s\t\n",
-			PrettyPrintClassTime(&c.StartTime),
+			PrettyPrintClassTime(&c),
 			color.MagentaString(c.Name),
 			c.InstructorId,
 			prettyPrintAttendance(&c))
@@ -103,8 +111,14 @@ func PrettyPrintClassResponse(dayCount int, response *ClassResponse) {
 	w.Flush()
 }
 
-func PrettyPrintClassTime(classtime *time.Time) string {
-	return color.BlueString(classtime.Format(PRETTY_PRINT_DATE_FORMAT))
+func PrettyPrintClassTime(c *Class) string {
+	endTime := c.StartTime.Add(time.Duration(c.DurationInMinutes) * time.Minute)
+
+	return color.BlueString(
+		"%s-%s",
+		c.StartTime.Format("Monday\t15:04"),
+		endTime.Format("15:04"),
+	)
 }
 
 func prettyPrintAttendance(c *Class) string {
