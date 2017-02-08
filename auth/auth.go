@@ -42,6 +42,7 @@ func AuthenticatedGet(url string) (resp *http.Response, err error) {
 	client := http.Client{}
 
 	req, err := http.NewRequest("GET", url, nil)
+	req.Header.Set("user-agent", util.UserAgent)
 	req.AddCookie(&http.Cookie{
 		Name:  COOKIE_NAME,
 		Value: token.Token,

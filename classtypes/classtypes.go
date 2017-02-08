@@ -3,8 +3,6 @@ package classtypes
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"strings"
 
 	"github.com/fatih/color"
@@ -35,15 +33,13 @@ type ClassTypeResponse struct {
 func ListClassTypes() (ClassTypeResponse, error) {
 	var ct ClassTypeResponse
 
-	resp, err := http.Get(CLASSTYPES_URL)
+	resp, err := util.HiyogaGet(CLASSTYPES_URL)
 
 	if err != nil {
 		return ct, err
 	}
 
-	body, _ := ioutil.ReadAll(resp.Body)
-
-	err = json.Unmarshal(body, &ct)
+	err = json.Unmarshal(resp, &ct)
 
 	return ct, err
 }

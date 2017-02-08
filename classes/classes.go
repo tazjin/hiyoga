@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"time"
 
 	"github.com/fatih/color"
@@ -66,15 +64,13 @@ func ListClasses(center string, daysFromNow int) (ClassResponse, error) {
 
 	var c ClassResponse
 
-	resp, err := http.Get(url)
+	resp, err := util.HiyogaGet(url)
 
 	if err != nil {
 		return c, err
 	}
 
-	body, _ := ioutil.ReadAll(resp.Body)
-
-	err = json.Unmarshal(body, &c)
+	err = json.Unmarshal(resp, &c)
 
 	return c, err
 }
