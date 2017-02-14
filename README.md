@@ -6,9 +6,9 @@ HiYoga CLI
 This is a simple CLI tool for accessing the [HiYoga][] API. It currently supports listing classes for a specified number
 of days in advance, describing the different types of classes available as well as listing bookings and their statuses.
 
-![Example screenshot](http://i.imgur.com/BpMw7wO.png)
+![Example screenshot](http://i.imgur.com/p3fDHek.png)
 
-Just `go get github.com/tazjin/hiyoga`.
+Just `go get github.com/tazjin/hiyoga/...`.
 
 ## Usage
 
